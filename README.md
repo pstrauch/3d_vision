@@ -15,6 +15,29 @@ For the versions of the packages used, please refer to the requirements.txt file
 # Structure
 -All scripts should be placed in the scripts folder. All relative paths in the python files are relative to this directory.
 -New models should be declared in the models folder. Their weights can be saved in data/model_weights
+-The Repository should look like the following
+-data
+    -datasets
+        -H2O
+            -h2odataset
+                -action_labels
+            -data
+                -subject_1
+                -subject_2
+                -subject_3
+                -subject_4
+                -object_ply_correct
+            -packed_data
+                -packed_data_test
+                -packed_data_val
+                -packed_data_train
+            -data_loader
+                -H2O_dataset_action.py
+                -data_reshape.py
+    -model_weights
+-models
+-scripts
+    -train_test.py
 
 # Dataset
 -At the first run the data has to be reshaped. This may take some time but you should be updated on the progress in your console. Once it has been created it will be stored locally on your machine.
