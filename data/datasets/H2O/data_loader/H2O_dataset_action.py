@@ -24,9 +24,7 @@ class H2ODataset(torch.utils.data.Dataset):
         type: str, 
     ) -> None:
         '''
-        data_dir: Where "action_labels, downloads, pose_lists" directories locate.
         type: Type of data, in ['train', 'val', 'test'].
-        config: configs from config file for dataset.
         '''
         self.data_dir = '../data/datasets/H2O'
         self.type = type
