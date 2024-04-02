@@ -5,7 +5,7 @@ For the data loader to work, the data has to be placed in specific directories. 
 1. clone the h2o git repo into data/dataset/H2O (https://github.com/taeinkwon/h2odataset) (we need the action_labels)
 2. download all subjectx_ego_v1_1.tar.gz from https://h2odataset.ethz.ch/data/ (x is either 1,2,3,4) 
 3. extract all four files into data/datasets/H2O/data 
-4. Rename them to subject_x (for example subject_1_ego to subject_1)
+4. Rename them to subjectx (for example subject_1_ego to subject1)
 5. from CASAR/code/H2O/dataset/representation copy object_ply_correct to data/dataset/H2O/data
 You should be good to go
 

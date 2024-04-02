@@ -136,12 +136,14 @@ class DataReshape:
             #WTF
             if i % 10 == 0:
                 print('%d/%d actions loaded' % (i, self.samples_num))
+            if 'test' == self.type:
+                start_frame = self.actions.iloc[i, 2]
+                end_frame = self.actions.iloc[i, 3]
+            else:
                 labels[i] = self.actions.iloc[i, 2] - 1
                 start_frame = self.actions.iloc[i, 3]
                 end_frame = self.actions.iloc[i, 4]
-            elif self.type == 'test':
-                start_frame = self.actions.iloc[i, 2]
-                end_frame = self.actions.iloc[i, 3]
+                
 
             hand_poses_dir = os.path.join(self.data_dir, 'data', self.actions['path'].values[i], 'cam4/hand_pose')
             obj_poses_dir = os.path.join(self.data_dir, 'data', self.actions['path'].values[i], 'cam4/obj_pose')
