@@ -22,10 +22,10 @@ For the versions of the packages used, please refer to the requirements.txt file
             -h2odataset
                 -action_labels
             -data
-                -subject_1
-                -subject_2
-                -subject_3
-                -subject_4
+                -subject1
+                -subject2
+                -subject3
+                -subject4
                 -object_ply_correct
             -packed_data
                 -packed_data_test
@@ -33,6 +33,7 @@ For the versions of the packages used, please refer to the requirements.txt file
                 -packed_data_train
             -data_loader
                 -H2O_dataset_action.py
+                -H2O_dataset_frame.py
                 -data_reshape.py
     -model_weights
 -models

@@ -6,6 +6,18 @@ from skimage import io
 from data_reshape import DataReshape
 from typing import List, Tuple, Optional, Dict
 
+'''
+This is one of two custom dataloader for the H2O dataset. 
+This dataloader will return 32 frames from a single action.
+It is intended to train models on the task of action recognition
+
+The datapoints returned have the following shape:
+1. hand pose: 32x126 (2 x 21 x 3) so 21 3d points for poth hands for each of the 32 frames
+2. object pose: 32x155 (8 + 63 + 84) 8 one hot encoding of position + 21 3d points + 2 hand of 21 contact + 21 distant points. This for each frame
+3. image: 32x256x455x3 The chosen images of this action
+4. label: An index that can be used as ground truth
+'''
+
 class H2ODataset(torch.utils.data.Dataset):
     def __init__(
         self, 

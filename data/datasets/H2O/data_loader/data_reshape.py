@@ -15,7 +15,7 @@ def uniformly_sampling(d):
     ----------
     sampling_points:    matrix of floats, dim = (8,100,3), xyz coordinates of 100 sampling points on the original 8 object meshes
     '''
-    dir_ply = 'data/datasets/H2O/data/object_ply_correct'
+    dir_ply = '../data/datasets/H2O/data/object_ply_correct'
     ply_files = os.listdir(dir_ply)
     sampling_points = np.zeros((8, d, 3))
     for i,f in enumerate(ply_files):
