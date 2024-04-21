@@ -47,9 +47,9 @@ class ValDataLoader(torch.utils.data.DataLoader):
 
 
 
-train_dataset = TrainDataLoader("data/h2o/")
+train_dataset = TrainDataLoader("/Users/dennisbaumann/Downloads/Dataset/")
 
-val_dataset = ValDataLoader("data/h2o/")
+val_dataset = ValDataLoader("/Users/dennisbaumann/Downloads/Dataset/")
 
 train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=2, shuffle=False)
 
@@ -64,8 +64,9 @@ for i, (data, label) in enumerate(train_loader):
         img = np.asarray(img, dtype=np.uint8)
         img = cv.cvtColor(img, cv.COLOR_RGB2BGR)
         cv.imshow("1",img)
-        cv.waitKey(0)
+        if cv.waitKey(0) & 0xFF == ord('q'):  # Press 'q' to close the window
+            continue
     print(label)
-
     if i == 0:
         break
+cv.destroyAllWindows()  # Close all OpenCV windows
