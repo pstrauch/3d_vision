@@ -14,22 +14,23 @@ import os
 feature_extractor = ViTFeatureExtractor.from_pretrained('google/vit-base-patch16-224', size=640)
 
 # Define the feature extractor function for images and heatmaps
-def preprocess_with_heatmap(images, heatmaps):
+def preprocess_with_heatmap(images):
     # Apply the feature extractor transformations to the images
     encoding = feature_extractor(images=images, return_tensors="pt")
     pixel_values = encoding.pixel_values
 
     # Apply the same transformations to the heatmaps
-    def transform_heatmap(image, size):
-        transform = transforms.Compose([
-            transforms.Resize(size),
-            transforms.ToTensor()
-        ])
-        return transform(image)
+    # def transform_heatmap(image, size):
+    #     transform = transforms.Compose([
+    #         transforms.Resize(size),
+    #         transforms.ToTensor()
+    #     ])
+    #     return transform(image)
     
-    transformed_heatmaps = torch.stack([transform_heatmap(hm, (640, 640)) for hm in heatmaps])
+    # transformed_heatmaps = torch.stack([transform_heatmap(hm, (640, 640)) for hm in heatmaps])
     
-    return pixel_values, transformed_heatmaps
+    return pixel_values#, transformed_heatmaps
+
 
 # Initialize dataset and dataloader
 train_dataset = ValData()
@@ -41,17 +42,27 @@ model = ViTModel.from_pretrained('google/vit-base-patch16-224', add_pooling_laye
 # Define the forward pass function to get attention maps
 def forward(pixel_values):
     outputs = model(pixel_values, output_attentions=True, interpolate_pos_encoding=True)
-    attentions = outputs.attentions[-1]  # Attention maps from the last layer
-    nh = attentions.shape[1]  # Number of heads
-    attentions = attentions[0, :, 0, 1:].reshape(nh, -1)  # Reshape to keep only output patch attention
-    return attentions
+
+    attentions = outputs.attentions[-1] # we are only interested in the attention maps of the last layer
+    nh = attentions.shape[1] # number of head
+    attentions = attentions[0, :, 0, 1:].reshape(nh, -1)
+    w_featmap = pixel_values.shape[-2] // model.config.patch_size
+    h_featmap = pixel_values.shape[-1] // model.config.patch_size
+    attentions = attentions.reshape(nh, w_featmap, h_featmap)
+    attentions = nn.functional.interpolate(attentions.unsqueeze(0), scale_factor=model.config.patch_size, mode="nearest")[0].cpu()
+    print(attentions.shape)
+    mean_attention = torch.mean(attentions, dim=0)
+
+    return mean_attention
 
 # Define the custom attention loss function
 def custom_attention_loss(attentions, heatmaps):
+    print(attentions.max(), attentions.min())
+
+    print(heatmaps.max(), heatmaps.min())
     assert attentions.shape == heatmaps.shape, "Attention maps and heatmaps must have the same shape."
     loss = F.mse_loss(attentions, heatmaps)
     return loss
-
 # Training loop
 optimizer = torch.optim.Adam(model.parameters(), lr=1e-4)
 num_epochs = 10
@@ -59,19 +70,39 @@ num_epochs = 10
 for epoch in range(num_epochs):
     model.train()
     running_loss = 0.0
-
+    
     for batch in train_loader:
         img, hand_poses, label, obj_poses,heatmaps = batch
         images = img[:,:, 7, :, :]
+        
+
+        # Define the crop size
+        crop_size = 360
+
+        # Calculate the starting point for cropping
+        start = (images.shape[-1] - crop_size) // 2
+
+        # Crop the images
+        cropped_images = images[:, :, :, start:start+crop_size]
+        crop_size = 720
+        start = (heatmaps.shape[-1] - crop_size) // 2
         heatmaps =  heatmaps[:,7, :, :]
-        # Preprocess images and heatmaps
-        pixel_values, transformed_heatmaps = preprocess_with_heatmap(images, heatmaps)
+        cropped_heatmaps = heatmaps[:, :, start:start+crop_size]
+        cropped_heatmaps = cropped_heatmaps
+        resized_heatmaps = nn.functional.interpolate(cropped_heatmaps.unsqueeze(1), size=(640, 640), mode='nearest').squeeze(1)
+        # Convert to float
+        resized_heatmaps = resized_heatmaps.float()
+
+        # Normalize to [0, 1]
+        resized_heatmaps = (resized_heatmaps - resized_heatmaps.min()) / (resized_heatmaps.max() - resized_heatmaps.min())
+        
+        pixel_values = preprocess_with_heatmap(cropped_images, resized_heatmaps)
         
         # Get attention maps
-        attentions = forward(pixel_values)
-        
-        # Compute custom attention loss
-        loss = custom_attention_loss(attentions, transformed_heatmaps)
+        attention= forward(pixel_values)
+        attention = attention.float()
+        attention = (attention - attention.min()) / (attention.max() - attention.min())
+        loss = custom_attention_loss(attention, resized_heatmaps.squeeze(0))
         
         optimizer.zero_grad()
         loss.backward()
