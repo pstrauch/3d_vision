@@ -63,7 +63,7 @@ class ValData(torch.utils.data.DataLoader):
         img = np.load(self.img_path + format(idx + 1, '03d') + ".npy")
         hand_poses = np.load(self.hand_path + format(idx + 1, '03d') + ".npy")
         obj_poses = np.load(self.obj_path + format(idx + 1, '03d') + ".npy")
-        heatmap = np.load(self.data_path + "heatmaps_val/" + format(idx + 1, '03d') + ".npy")
+        heatmap = np.load(self.data_path + "hand_emph_obj_heatmaps_val/" + format(idx + 1, '03d') + ".npy")
         label = self.labels[idx]
         img = np.moveaxis(img, -1, 0)
         img = torch.from_numpy(img).float()

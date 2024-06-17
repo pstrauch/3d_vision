@@ -20,7 +20,20 @@ Loads action sequences from the H2O dataset, 8 frames per action. The dataset fi
 
 '''
 h2o_root = '/Users/dennisbaumann/3d_vision/data/'
+class TestData(torch.utils.data.DataLoader):
+    def __init__(self):
+        self.img_path = h2o_root + "framesequences_8_test/"
+        self.num_actions = int(len(os.listdir(self.img_path))/8)
 
+    def __len__(self):
+        return self.num_actions
+    
+    def __getitem__(self, idx):
+        img = np.load(self.img_path + format(idx + 1) + ".npy")
+        img = np.moveaxis(img, -1, 0)
+        img = torch.from_numpy(img).float()
+
+        return img
 
 class TrainData(torch.utils.data.DataLoader):
     def __init__(self):
@@ -38,13 +51,13 @@ class TrainData(torch.utils.data.DataLoader):
         img = np.load(self.img_path + format(idx + 1, '03d') + ".npy")
         hand_poses = np.load(self.hand_path + format(idx + 1, '03d') + ".npy")
         obj_poses = np.load(self.obj_poses + format(idx + 1, '03d') + ".npy")
-        heatmap = np.load(self.data_path + "heatmaps_train/" + format(idx + 1, '03d') + ".npy")
+        #heatmap = np.load(self.data_path + "heatmaps_train/" + format(idx + 1, '03d') + ".npy")
         label = self.labels[idx]
 
         img = np.moveaxis(img, -1, 0)
         img = torch.from_numpy(img).float()
 
-        return img, hand_poses, label, obj_poses, heatmap
+        return img, hand_poses, label, obj_poses#, heatmap
     
     
 class ValData(torch.utils.data.DataLoader):
@@ -63,7 +76,7 @@ class ValData(torch.utils.data.DataLoader):
         img = np.load(self.img_path + format(idx + 1, '03d') + ".npy")
         hand_poses = np.load(self.hand_path + format(idx + 1, '03d') + ".npy")
         obj_poses = np.load(self.obj_path + format(idx + 1, '03d') + ".npy")
-        heatmap = np.load(self.data_path + "heatmaps_val/" + format(idx + 1, '03d') + ".npy")
+        heatmap = np.load(self.data_path + "obj_heatmaps_val/" + format(idx + 1, '03d') + ".npy")
         label = self.labels[idx]
         img = np.moveaxis(img, -1, 0)
         img = torch.from_numpy(img).float()
@@ -82,10 +95,9 @@ if __name__=="__main__":
 
     val_loader = torch.utils.data.DataLoader(val_dataset, batch_size=2, shuffle=False)
 
-
-    for i, (img, hand_poses, label, obj_poses) in enumerate(train_loader):
-        print(label)
-        print(obj_poses.shape)
+    test_dataset = TestData()
+    test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=1, shuffle=False)
+    for i, img in enumerate(test_loader):
         img = img.numpy()
         for j in range(img.shape[0]):
 
