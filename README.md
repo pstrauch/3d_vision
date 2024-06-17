@@ -1,4 +1,5 @@
 # 3D Vision Project
+
 This repository comes without the data that is part of H2O. The dataset can be found at https://taeinkwon.com/projects/h2o/.
 
 For the data loader to work, the data has to be placed in specific directories. Place it according to the following steps.
@@ -43,3 +44,4 @@ For the versions of the packages used, please refer to the requirements.txt file
 # Dataset
 -At the first run the data has to be reshaped. This may take some time but you should be updated on the progress in your console. Once it has been created it will be stored locally on your machine.
 If you need to change the reshaping, please delete the files in the data/datasets/H2O/packed_data directory. Otherwise, your changes may not take effect.
+
