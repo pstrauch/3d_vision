@@ -16,8 +16,13 @@ transformers == 4.40.2
 wandb
 
 # Structure
-we supply data loaders and 
- 
+
+It is crucial to adjust the code to your local paths.
+
+we supply data loaders for relevant training, val and test input in utils and training folders.
+we supply scripts to create the contact map and heatmaps in the respective folders. it is crucial to create these before running the training.
+
+In the train folder, scripts are provided to train the different methods. 
 # Dataset
 -At the first run the data has to be reshaped. This may take some time but you should be updated on the progress in your console. Once it has been created it will be stored locally on your machine.
 If you need to change the reshaping, please delete the files in the data/datasets/H2O/packed_data directory. Otherwise, your changes may not take effect.
