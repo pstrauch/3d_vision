@@ -13,12 +13,12 @@ Our project was developed using python 3.11. Here is a short list of the used pa
 
 This repository comes without the data that is part of H2O. The dataset can be found at https://taeinkwon.com/projects/h2o/. We further provide the object meshes in this repo.
 
-Since our scripts were run on different environments, please adjust the paths in the scripts according to your local environment and file hierarchy. For reference, we provide the hierarchies used for our Swin- and ViT-based frameworks. 
+Since our scripts were run on different environments, data paths may differ. Please adjust the paths in the scripts according to your local environment and file hierarchy! For reference, we provide the hierarchies used for our Swin- and ViT-based frameworks below: 
 
 **Swin-Based Unified Framework**
 1. place the raw h2o dataset in data/h2o/h2odataset
 2. place the object meshes in data/h2o/object_meshes
-3. the extracted data by the scripts are placed in data/h2o/seq_n_mode (see scripts for further comments)
+3. the extracted data by the scripts are placed in data/h2o/seq_n_mode (see scripts for further description and parameters)
 
 **ViT Self Attention Shaping**
 1. clone the h2o git repo into data/dataset/H2O (https://github.com/taeinkwon/h2odataset) (we need the action_labels)
@@ -30,15 +30,10 @@ Since our scripts were run on different environments, please adjust the paths in
 
 # Structure
 
-- Please note that any paths in the script must be adjusted to your local file hierarchy.
 - The data_extractors scripts are used to extract and reshape the raw data.
 - The contact_gt and heatmap_gt scripts are used to generate the ground truth contact and heat maps.
 - We supply data loaders for relevant training, val and test input in utils and training folders.
-we supply scripts to create the contact map and heatmaps in the respective folders. it is crucial to create these before running the training.
+- In the train folder, scripts are provided to train the different methods. 
+- Further utility scripts in utils and reprojections are used for generating plots but are not crucial to the project 
 
-In the train folder, scripts are provided to train the different methods. 
-
-
-# Dataset
--At the first run the data has to be reshaped. This may take some time but you should be updated on the progress in your console. Once it has been created it will be stored locally on your machine.
-If you need to change the reshaping, please delete the files in the data/datasets/H2O/packed_data directory. Otherwise, your changes may not take effect.
+> Please note that any paths in the script must be adjusted to your local file hierarchy!
